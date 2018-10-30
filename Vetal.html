@@ -1,0 +1,767 @@
+<!--
+
+	    --VETAL--
+ -A multi-messenger skymap-
+
+Created by Elsa Forberger, Blake Gallay, and Haley James as part of the 2017 WIPAC Summer High School Internship program.
+
+Special thanks to fellow high school interns Marcus Graham and Emme Hannibal, as well as mentors Joshua Wood, David Schultz,
+Silvia Bravo, and Amanda Nothem.
+
+Vetal is under active development at github.com/bgallay/Vetal.
+
+Contact the developers:
+
+blakejg27@gmail.com
+
+-->
+<!DOCTYPE html>
+<html>
+<head>
+
+
+  <!-- Import files -->
+  
+  <script src="main.js"></script>
+  <script src="./output/skymap.js"></script>
+  <script src="utility.js"></script>
+  <script src="./processing/customReader.js"></script>
+  
+  
+  <!-- /read and filter -->
+  
+  <script src="./processing/pushFiles.js"></script>
+  <script src="./processing/parseFormat.js"></script>
+  <script src="./processing/findRangeEnergy.js"></script>
+  <script src="./processing/filter.js"></script>
+  
+  <script src="./analysis/likelihood_analysis.js"></script>
+  
+  
+  <!-- /ui -->
+
+  <script src="interface.js"></script>
+  
+  
+  
+  
+  
+  
+  
+  
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <link rel="stylesheet" href="/resources/demos/style.css">
+  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <script src="https://d3js.org/d3.v4.min.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name = "keywords" content = "IceCube Neutrino multi-messenger Astronomy cosmic ray rays resarch website skymap Fermi HAWC Vetal">
+<meta name="author" content= "Elsa Forberger, Haley James, and Blake Gallay">
+<title>Vetal</title>
+<style>
+
+body {
+  background: #FFFFFF;
+  font-family: "Times New Roman", Times, serif;
+  width: 1220px;
+}
+
+div.tab {
+	float:left;
+	padding: 1% 0;
+	display:inline-block;
+    width: 25%;/*305px;*/
+    
+}
+
+/* Style the buttons that are used to open and close the accordion panel */
+button.accordion {
+    background-color: #A9A9A9; 
+    color: #444;
+    cursor: pointer;
+    padding: 7%;/*18px;!!*/
+    width: 99%;/*303px;*/
+    text-align: left;
+    border: none;
+    outline: none;
+    transition: 0.4s;
+}
+
+/* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
+button.accordion.active, button.accordion:hover {
+    background-color: #CAEBF2;
+}
+
+/*scrolling checkboxes for source types*/
+div.container { 
+	border:2px solid #ccc; 
+	width: 95%;/*260px; !!*/
+	height: 100px;
+	overflow-y: scroll; 
+}
+
+/* Style the accordion panel. Note: hidden by default */
+div.panel {
+    padding: 10px 7%;/*18px;*/
+    background-color:#EFEFEF;
+    display: none;
+    width: 259px;
+}
+
+multiple.selected {
+	color: #FF3B3F;
+}
+
+multiple.normal {
+	color: 'black';
+}
+  
+ul.links {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #333;
+}
+
+li.links {
+    float: left;
+    
+}
+
+li.links a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    width: 150px;
+    
+}
+
+/* Change the link color to #111 (black) on hover */
+li.links a:hover:not(.active) {
+    background-color: #111;
+    
+}
+
+.active {
+    background-color: #CAEBF2;
+    color: #111;
+    border-top: 1px solid #111;
+    border-bottom: 1px solid #111;
+    border-left: 1px solid #111;
+    
+}
+
+li.links {
+    border-right: 1px solid #bbb;
+}
+
+
+</style>
+
+ <script>
+  $( function(){
+  		var slider_data = {};
+  		sliders = function(name){
+  			function scale(value){
+  				var minp = 0;
+				var maxp = 100;
+		  		
+				// The result should be between 100 an 10000000
+				var minv = Math.log(slider_data[name][0]);
+			  	var maxv = Math.log(slider_data[name][1]);
+
+			  	// calculate adjustment factor
+			  	var scale = (maxv-minv) / (maxp-minp);
+				
+				//use for log scale
+			  	value = Math.exp(minv + scale*((value*100)-minp));
+			  	
+  				//use for linear scale
+  				//value *= (slider_data[name][1]-slider_data[name][0]);
+  				//value += slider_data[name][0];
+  				  				
+  				return value;
+  			}
+  			var methods = {
+  				set: function(min, max, callback) {
+  					if (callback == null && name in slider_data) {
+  						callback = slider_data[name][2];
+  					}
+  					slider_data[name] = [min,max,callback];
+  					$("#"+name).slider({
+  						range: true,
+  						min: 0,
+  						max: 1,
+  						step: 0.01,
+  						values: [0,1],
+  						slide: function(event,ui){
+  							callback(scale(ui.values[0]),scale(ui.values[1]));
+  						}
+  	 				});
+  	 				callback(methods.get(0),methods.get(1));
+  	 			},
+  				get: function(pos) {
+  					var value = $("#"+name).slider("option","values")[pos];
+  					return scale(value);
+  				}
+  			};
+  			return methods;
+  		};
+  		
+  		sliders("neutrinoslider").set(1,100,function(pos0, pos1){
+  			  	if (!isNaN(pos0)  && !isNaN(pos1)) {
+  					$( "#neutrinoamount" ).val(parseInt(pos0) + " TeV - " + parseInt(pos1) + " TeV");
+  				}
+  				else{
+  					$( "#neutrinoamount" ).val("No energy values found");
+  				}
+  		});
+  		sliders("gamma_rayslider").set(1,100,function(pos0, pos1){
+  			if (!isNaN(pos0)  && !isNaN(pos1)) {
+  				$( "#gamma_rayamount" ).val(parseInt(pos0) + " MeV - " + parseInt(pos1) + " MeV");
+  			}
+  				else{
+  					$( "#gamma_rayamount" ).val("No energy values found");
+  				}
+  		});
+  		sliders("sourceslider").set(1,100,function(pos0, pos1){
+			if (!isNaN(pos0)  && !isNaN(pos1)) {
+  				$( "#sourceamount" ).val(pos0*1000/1000 + " - " + pos1*1000/1000);  	
+  			}
+			else{
+				$( "#sourceamount" ).val("No values found");
+			}		
+  		});
+  		sliders("otherslider").set(1,100,function(pos0, pos1){
+			if (!isNaN(pos0)  && !isNaN(pos1)) {
+  				$( "#otheramount" ).val(parseInt(pos0) + " - " + parseInt(pos1));  	
+  			}
+			else{
+				$( "#otheramount" ).val("No values found");
+			}		
+  		});
+  	});
+  	
+  </script>
+  <link rel="icon" href="https://pbs.twimg.com/profile_images/909795893364305920/4hagG1aM.jpg">
+</head>
+<body>
+
+<div>
+	<ul class="links">
+		  <li class="links" ><a href="http://icecube.wisc.edu/~eforberger/Vetal.html">Home</a></li>
+ 		  <li class="links"><a class="active" href="http://icecube.wisc.edu/~eforberger/skymap_about.html"><font color="black">About</font></a></li>
+	</ul>
+</div>
+
+
+ <!-- START -->
+ <h1><big><big>ν</big></big>etal:  <font size=5>   a Multi-Messenger Skymap </font></h1> 
+ <button onclick="show_fermi_info()">Fermi Conversion Info (temp. disabled)</button>
+  <div id = "ferminfo" style="background-color: #CAEBF2; display: none; margin-top: 5px; position: fixed; margin-left: 50x; width: 250px; height: 280px; z-index: 5;">
+  <h4 style="color: black; font-size: 15; margin-left: 10px;">Converting and Uploading Fermi LAT Files</h4>
+  <h4 style="color: black; font-size: 15; margin-left: 10px;">Download conversion utility:</h4><a href="/~eforberger/Utilities/fits2txt.zip" download>
+  <button >Download</button></a>
+  <h4 style="color: black; font-size: 15; margin-left: 10px;">Run fits2txt.app, then open the file navigator and select a Fermi .FITS file. Once the file has been processed, fermidataformatted.txt can be found under /fits2txt.app/Contents/Resources.</h4>
+</div>
+<div id = "likelihood_plot" style="background-color: #CAEBF2; display: none; margin-top: 5px; position: fixed; margin-left: 50x; width: 250px; height: 280px; z-index: 5;">
+  <h4 style="color: black; font-size: 15; margin-left: 10px;">Converting and Uploading Fermi LAT Files</h4>
+  <h4 style="color: black; font-size: 15; margin-left: 10px;">Download conversion utility:</h4><a href="/~eforberger/Utilities/fits2txt.zip" download>
+  <button >Download</button></a>
+  <h4 style="color: black; font-size: 15; margin-left: 10px;">Run fits2txt.app, then open the file navigator and select a Fermi .FITS file. Once the file has been processed, fermidataformatted.txt can be found under /fits2txt.app/Contents/Resources.</h4>
+</div>
+ <input type="file" id="myFile" name='myFile' multiple size="5">
+ 
+	<label for="galactic">Galactic Coordinates</label>
+	<input type="radio" name="coord_type" id="galactic"  checked=true onchange="coordType()">&nbsp;&nbsp;
+	<label for="equatorial">Equatorial Coordinates</label>
+	<input type="radio" name="coord_type" id="equatorial"  onchange="coordType()">
+
+<div class="tab">
+
+<hr style="height:4.2px; visibility:hidden;" />
+<button class="accordion" ">IceCube</button> 
+
+<div id="other_div" class="panel" ">
+  <div id = 'Ice Cube' >
+	
+	<select multiple id="neutrinoselect" style = "width: 95%" onchange = "updateEnergyRange('neutrino')" onmouseover = 'changeSelectedColor("neutrino")' > </select>
+     
+     <fieldset style="width:200px">
+ 	<legend>IceCube Types</legend>
+ 	<label for="shower">Shower</label>
+    <input type="checkbox" name="shower" id="shower" checked=true>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <label for="track">Track</label>
+    <input type="checkbox" name="track" id="track" checked=true>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    </fieldset>
+    <br></br>
+    
+    <form id = 'Neutrinoinput'>
+<p>
+  <label for="neutrinoamount">Enter the minimum and maximum energy levels and corresponding colors.:</label>
+    <input type="color" name="col" id="colnmin" value="#d8000d">    to  <input type="color" name="col" id="colnmax" value="#ede900">  <br>
+  <input type="text" id="neutrinoamount" readonly style="border:0; color:#f6931f; font-weight:bold;"> 
+</p>
+	<div id="neutrinoslider"></div>
+	
+	<label for ="neutrinoColorScale" >What scale to use for the color?</label>
+	<select id = "neutrinoColorScale">
+  	<option value="log">Use log<sub>10</sub></option>
+  	<option value="lin">Use a linear scale</option>
+ 	 <option value="linsqrt">Use a square root scale.</option>
+	</select>
+	
+		</form>
+	
+	</div> 
+</div>
+</div>
+
+<div class="tab">
+<button class="accordion">Fermi/Gamma Ray Events</button>
+
+
+<div id="other_div2" class="panel">
+<div id = 'Fermi/Gamma Ray Events'  >
+	<select multiple id="gamma_rayselect"  style = "width: 95%" onchange = "updateEnergyRange('gamma_ray')" onmouseover = 'changeSelectedColor("gamma_ray")'></select>
+<br></br><br></br>
+<form id = 'gamma_rayinput'>
+
+<p>
+  <label for="gamma_rayamount">Enter the minimum and maximum energy levels and corresponding colors.:</label>
+    <input type="color" name="col" id="colgmin" value="#61187a">  to   <input type="color" name="col" id="colgmax" value="#42f445"> <br>
+  <input type="text" id="gamma_rayamount" readonly style="border:0; color:#f6931f; font-weight:bold;">  
+</p>
+	<div id="gamma_rayslider"></div>
+	<label for ="gamma_rayColorScale">What scale to use for the color?</label>
+	<select id = "gamma_rayColorScale">
+		<option value="log">Use log<sub>10</sub></option>
+		<option value="lin">Use a linear scale</option>
+		 <option value="linsqrt">Use a square root scale.</option>
+	</select>	</form>
+	
+</div>
+</div>
+</div>
+
+<div class="tab">
+<button class="accordion">Gamma Ray Sources</button>
+
+
+<div id="gamma_div" class="panel" style="height:auto">
+<div id = 'Gamma Ray Sources'  >
+
+
+	<select multiple id="sourceselect"  style = "width: 95%" onchange = "updateEnergyRange('source')" onmouseover = 'changeSelectedColor("source")'></select>
+	
+
+	<div class="container">
+	<label for="1" style ="font-size:15px">Unidentified</label>
+    <input type="checkbox" name="UNID" id="1" align ='right' checked=true> <br>
+    <label for="4" style ="font-size:15px">Composite SNR</label>
+    <input type="checkbox" name="CompositeSNR" id="4" checked=true> <br>
+     <label for="7" style ="font-size:15px">Shell</label>
+    <input type="checkbox" name="Shell" id="7" checked=true> <br>
+    <label for="2" style ="font-size:15px">Pulsar Wind Nebula</label>
+    <input type="checkbox" name="PWN" id="2" checked=true> <br>
+    <label for="3" style ="font-size:15px">High frequency blazar</label>
+    <input type="checkbox" name="HBL" id="3" checked=true> <br>
+    <label for="5" style ="font-size:15px">Massive Star Cluster</label>
+    <input type="checkbox" name="MassiveStarCluster" id="5" checked=true> <br>
+    <label for="9" style ="font-size:15px">Active Galaxy</label>
+    <input type="checkbox" name="bcu" id="9" checked=true> <br>
+    <label for="10" style ="font-size:15px">FSRQ Blazar</label>
+    <input type="checkbox" name="fsrq" id="10" checked=true> <br>
+    <label for="12" style ="font-size:15px">Radio Galaxy</label>
+    <input type="checkbox" name="rdg" id="12" checked=true>  <br>
+    <label for="13" style ="font-size:15px">Supernova Remnant</label>
+    <input type="checkbox" name="snr" id="13" checked=true> <br>
+    <label for="14" style ="font-size:15px">Starburst Galaxy</label>
+    <input type="checkbox" name="sbg" id="14" checked=true> <br>
+    <label for="15" style ="font-size:15px">special case-potential association with SNR or PWN</label>
+    <input type="checkbox" name="spp" id="15" checked=true> <br>
+    <label for="16" style ="font-size:15px">Globular Cluster</label>
+    <input type="checkbox" name="glc" id="16" checked=true>  <br>
+    <label for="17" style ="font-size:15px">non-blazar active galaxy</label>
+    <input type="checkbox" name="agn" id="17" checked=true> <br>
+    <label for="18" style ="font-size:15px">Compact steep spectrum quasar</label>
+    <input type="checkbox" name="css" id="18" checked=true> <br>
+    <label for="19" style ="font-size:15px">Soft spectrum radio quasar</label>
+    <input type="checkbox" name="ssrq" id="19" checked=true> <br>
+    <label for="6" style ="font-size:15px">SNR Molecule Cloud</label>
+    <input type="checkbox" name="SNRMolecCloud" id="6" checked=true> <br>
+    <label for="8" style ="font-size:15px">Bl Lac Blazar</label>
+    <input type="checkbox" name="bll" id="8" checked=true> <br>
+     <label for="11" style ="font-size:15px">Pulsar, no pulsations found</label>
+    <input type="checkbox" name="psr" id="11" checked=true> <br>
+    <label for="20" style ="font-size:15px">Pulsar, identified by pulsations</label>
+    <input type="checkbox" name="psri" id="20" checked=true> <br>
+    </div>
+    <!-- to add in new types:
+    1) Add in a new input and its label. Don't forget to change the id on both of the lines
+    2) Go to the function called updateTypeList(). Set the max for k to be 1+the max id.
+    3) In the list types, add in the new type drawing instructions. The entry in type should be the name of the new type.
+    4) Go to the function drawPoints(). In the place where source data is drawn (it's labeled) add the name of the new type to the list containing all the sources. 
+    	-if the entry in types contains both circles and lines, add the type name to the list in the if-statment that sents the var coords
+    -->
+    
+    <form id = sourceinput>
+	
+	<label for="spec_index">Spectral Index</label>
+    <input type="radio" name="radio_name" id="spec_index" onchange="updateEnergyRange('source')" checked=true>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+     <label for="flux">Flux</label>
+    <input type="radio" name="radio_name" id="flux" onchange="updateEnergyRange('source')" ><br></br>
+    
+    <p id ="spec_form">Choose range of spectral index and corresponding colors to display.</p>
+    
+    <p id="flux_form">Choose range of flux and corresponding colors to display.</p>
+<p>
+  <input type="color" name="col" id="colsourcemin" value="#ff00e7">   to <input type="color" name="col" id="colsourcemax" value="#34e5b0"> <br>
+  <input type="text" id="sourceamount" readonly style="border:0; color:#f6931f; font-weight:bold;"> 
+	</form>	
+</p>
+	<div id="sourceslider"></div> 
+	<label for ="sourceColorScale" >What scale to use for the color?</label>
+	<select id = "sourceColorScale">
+		<option value="log">Use log<sub>10</sub></option>
+		<option value="lin">Use a linear scale</option>
+		 <option value="linsqrt">Use a square root scale.</option>
+	</select>	
+</div>
+</div>
+</div>
+
+<div class="tab">
+<button class="accordion">Other Data</button>
+
+
+<div id="other_div3" class="panel">
+<div id = 'Other Data' >
+	<select multiple id="otherselect"  style = "width: 95%" onchange = "updateEnergyRange('other')" onmouseover = 'changeSelectedColor("other")' > <!--onmouseover = 'changeSelectedColor()'-->
+	<option></option>
+	</select>
+
+<br></br> <br></br>
+	<form id = 'otherinput'>
+<p>
+  <label for="otheramount">Enter the minimum and maximum value levels and corresponding colors.</label> <br>
+   <input type="color" name="col" id="colomin" value="#61187a">  to   <input type="color" name="col" id="colomax" value="#ed9e00"> <br>
+  <input type="text" id="otheramount" readonly style="border:0; color:#f6931f; font-weight:bold;"> 
+</p>
+	<div id="sourceslider"></div>
+	 <label for ="otherColorScale" >What scale to use for the color?</label>
+	<select id = "otherColorScale">
+		<option value="log">Use log<sub>10</sub></option>
+		<option value="lin">Use a linear scale</option>
+		 <option value="linsqrt">Use a square root scale.</option>
+	</select>	
+	</form>
+	
+	
+</div>
+</div>
+
+</div>
+<div style="width:100%;clear:both"></div>
+
+
+<br></br>
+
+
+<div>
+<label for="timebox">Toggle filtering by time</label>
+  <input type="checkbox" name="timebox" id="timebox" onchange = "hideshow()"><br></br>
+ 	<form id="times">
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  	<label for="year">Year</label>
+  	<input type="text" name = "year" id="year" value="2017" style = 'width: 5%'>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  Month
+  <select id="month">
+	<option value="Jan">January</option>
+	<option value="Feb">February</option>
+	<option value="Mar">March</option>
+	<option value="Apr">April</option>
+	<option value="May">May</option>
+	<option value="June">June</option>
+	<option value="July">July</option>
+	<option value="Aug">August</option>
+	<option value="Sept">September</option>
+	<option value="Oct">October</option>
+	<option value="Nov">November</option>
+	<option value="Dec">December</option>
+	</select>
+
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <label for="day">Day</label>
+  	<input type="text" name = "day" id="day" value="28" style = 'width: 5%'>
+ &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+ <label for="hour">Hour</label>
+  	<input type="text" name = "hour" id="hour" value="10" style = 'width: 5%'>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <label for="minute">Minute</label>
+  	<input type="text" name = "minute" id="minute" value="00" style = 'width: 5%'>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <label for="second">Second</label>
+  	<input type="text" name = "second" id="second" value="00" style = 'width: 5%'>
+  	</form>
+</div> 	
+
+<div>
+	
+	<form style="position:relative; left:900px; top:-20px; z-index:2" id="set_margin">
+	Margin
+	
+	<input type="text" name = "margin" id="margin" value=31536000>
+	
+	<select id="timeselect">
+	<option value="y">Years</option>
+	<option value="m">Months</option>
+	<option value="d">Days</option>
+	<option value="h">Hours</option>
+	<option value="m">Minutes</option>
+	<option value="s" selected>Seconds</option>
+	</select>
+</div>
+
+<div>
+	<label for="zoombox">Toggle zoom and pan</label>
+		<input type="checkbox" name="zoombox" id="zoombox">
+</div>
+<br>
+
+<div id="selectioninfo_source">
+ <b>When displaying gamma-ray sources alongside neutrinos, click on the points to perform likelihood analysis. </b>
+ </div>
+
+<div id="selectioninfo_neutrino">
+  <b>When displaying neutrino data, click on the data points to select events. </b>
+  <br>
+  Only display events within selected neutrino error regions<input type='checkbox' id='onlyErr' onchange='initialize()'>
+  Only show selected neutrinos:<input type='checkbox' id='filterNeutrinos' onchange='intialize()'>
+  <br>
+  <br>
+</div>
+ 
+<div id="clearselection">
+<button type="button" onclick="clear_selection()">Clear Selections</button>
+</div>
+<div id="div_canvas">
+<br>
+<div>
+<button type="button" onclick="initialize()">Draw SkyMap</button>
+</div>
+
+
+<br>
+
+
+
+
+<script src="./d3/d3.v4.min.js"></script>
+<script src="./d3/d3-geo-projection.v2.min.js"></script>
+<script src="./Astrojs/astro.js"></script>
+<script src="./Astrojs/astro.constants.js"></script>
+<script src="./Astrojs/astro.coordinates.js"></script>
+
+
+<script>
+var acc = document.getElementsByClassName("accordion");
+var i;
+var dataBinding;
+canGo = true;
+d3.selectAll("svg").remove();
+//changes color of moused over file in the file selectors
+selected_neutrino = 0;
+selected_events = [];
+selected_source = [];
+analysis_drawn = false;
+
+function clear_selection(){
+selected_events = [];
+selected_source = [];
+
+initialize();
+
+}
+
+//changes color of the name in the file selector that the mouse is over
+
+function changeSelectedColor(x){
+	
+	$('#'+x+"select option").each(function(){
+		$(this).hover(
+  			function() {
+				$(this).css('color', '#FF3B3F');
+			}, 
+			function() {
+				$(this).css('color', 'black');
+			}
+		);
+	});
+}
+
+//Makes all collapsibles the same size
+function changeHeight() {
+	var otherHeight=$("#other_div").height();
+	var gammaHeight=$("#gamma_div").height();
+	otherHeight=gammaHeight;
+	$("#other_div").height(otherHeight-53);
+	$("#other_div2").height(otherHeight-53);
+	$("#other_div3").height(otherHeight-53);
+}
+changeHeight();
+
+//Allows user to deselect radio
+$(document).ready(function(){
+
+	$(function(){
+		var notAllRadios = $('input[name=radio_name]')
+		var radioChecked;
+
+		var setCurrent = function(e) {
+			var obj = e.target;
+			radioChecked = $(obj).attr('checked');
+		}
+
+		var setCheck = function(e) {
+			if (e.type == 'keypress' && e.charCode != 32) {
+				return false;
+			}
+			var obj = e.target;
+			if (radioChecked) {
+				$(obj).attr('checked', false);
+				//$(obj).attr('onchange', changeEnergyParams('source'));//hideshow(false) == false);
+			} 
+			else {
+				$(obj).attr('checked', true);
+				//$(obj).attr('onchange', changeEnergyParams('source'));//hideshow(false));
+			}
+		} 
+
+		$.each(notAllRadios, function(i, val){ 
+			var label = $('label[for=' + $(this).attr("id") + ']');
+			$(this).bind('mousedown keydown', function(e){
+				setCurrent(e);
+			});
+
+			label.bind('mousedown keydown', function(e){
+				e.target = $('#' + $(this).attr("for"));
+				setCurrent(e);
+			});
+
+			$(this).bind('click', function(e){
+				setCheck(e); 
+			});
+
+		});
+
+	});
+});
+
+//Handles panel toggeling
+for (i = 0; i < acc.length; i++) {
+    acc[i].onclick = function(){
+        /* Toggle between adding and removing the "active" class,
+        to highlight the button that controls the panel */
+        this.classList.toggle("active");
+
+        /* Toggle between hiding and showing the active panel */
+        var panel = this.nextElementSibling;
+        if (panel.style.display === "block") {
+            panel.style.display = "none";
+        } else {
+            panel.style.display = "block";
+        }
+    }
+}
+
+
+ initialize();
+// Object.assign polyfill
+
+//stringout is all the points to draw.
+
+
+//show the download and use info about the fermi converter
+function show_fermi_info(){
+/*
+	var x = document.getElementById("ferminfo");
+	if(x.style.display == 'block'){
+		x.style.display = 'none';
+	}else{
+		x.style.display = 'block';
+	}*/
+}
+
+var Galactic = true;
+
+
+//this sets the text displayed in the file selector. User uploaded files will just have their filename as their text
+function getDropDownText(fileName){
+	var names = [["fermit1.txt", "FERMI Photon data release Apr 15 2015"],
+	 ["fermit2.txt", "FERMI Photon data release June 22 2017"], 
+	 ["fermit3.txt", "FERMI Photon data release Apr 04 2015"], 
+	 ["fermit4.txt", "FERMI Photon data release Dec 08 2016"], 
+	 ["hawc2.txt", "HAWC Sources"], ["output_Observation.txt", "4 years of IceCube Data"],
+	 ['nhdata.txt', "Northern Hemisphere High Energy Neutrinos"],
+	 ['pointsources.txt','Fermi 4-yr point source catlog'] ];
+	 for (item in names){
+	 	if (names[item][0] == fileName){
+	 		return names[item][1];
+	 	}
+	 }
+	 var shortname = fileName.split('/')[fileName.split('/').length-1];
+	 return shortname.substring(0, shortname.length-4);
+}
+
+
+
+
+
+//rangelist entry: [[filename,[max, min]],...] //for source:[[filename,[smax, smin], [fmax, fmin]],...]
+var rangeList = [];
+
+var typeList =[];
+
+
+
+if(selected_source[0] == null){
+var page_height = 1000;
+}else{
+var page_height = 1200;
+}
+
+//end of change params
+
+var credits = d3.select("body").append("svg")
+    		.attr("width", 1000)
+    		.attr("height", 100)
+  		.append("g")
+   	 		.attr("transform", "translate(" + 0 + "," + 75 + ")");
+	$("svg").css({top:page_height,left:0,position:'absolute'});
+	
+	credits.append("text")
+	  	.attr("text-anchor", "middle")
+	  	.attr("transform", "translate(600,0)")
+	  	.text("Created by Elsa Forberger, Haley James, and Blake Gallay")	
+		.attr('font-size','15')
+		
+function coordType(){
+if (document.getElementById("galactic").checked){
+Galactic = true;
+}
+if (document.getElementById("equatorial").checked){
+Galactic = false;
+}
+}
+</script>
+</div>
+
+</body>
+</html>
+
