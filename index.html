@@ -2,6 +2,8 @@
 <html>
 <style>
 
+/* Gradient Transition */
+
 div {
   left: 0;
   right: 0;
@@ -42,16 +44,7 @@ div {
   opacity: 1;
 }
 
-/* Fading images */
-
-#cf3 {
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  display: fixed;
-  overflow: auto;
-}
+/* Image Transition */
 
 .grad img {
   position:absolute;
@@ -62,29 +55,6 @@ div {
   -o-transition: opacity 1s ease-in-out;
   transition: opacity 8s ease-in-out;
 }
-/*
- @keyframes cf3FadeInOut {
-  0% {
-  opacity:1;
-}
-45% {
-opacity:1;
-}
-55% {
-opacity:0;
-}
-100% {
-opacity:0;
-}
-}
-
-.grad img.top {
-animation-name: cf3FadeInOut;
-animation-timing-function: ease-in-out;
-animation-iteration-count: infinite;
-animation-duration: 1s;
-animation-direction: alternate;
-}*/
 
 .grad:hover img.top{
 	opacity:0;
@@ -126,11 +96,6 @@ opacity:0.1;
  top: 4%;
  left: 0.5%;
  background:none;border:none;cursor:pointer;outline:0;}
- /*
- button.about:hover{
-	opacity: 0;
-	transition:0.5s;
- }*/
  
  #abouttext {
  position: absolute;
@@ -154,7 +119,6 @@ $(document).ready(function(){
 <link rel='icon' href='images/day.gif' type='image/x-icon'/>
 </head>
 
-
 <body>
   
  <div id="abouttext" margin-top="50%">
@@ -169,6 +133,8 @@ $(document).ready(function(){
 	</font>
  </div>
 
+ <!-- TODO: CLEAN -->
+ 
 <div class="grad">
 	
 	<img class="top" src="./images/morning.gif" height="20%"/>
@@ -189,25 +155,8 @@ $(document).ready(function(){
 	<button id = "about">
 		<font face="moonlight" color="white" size="8">&nbsp;About</font>
 	</button>
-	
-
-
-
-	<!--
-		<font face="century gothic" color="white" size="5">&nbsp;&nbsp;&nbsp;Bristol Street Studios</font>
-	-->
-
 
 </div>
-
-<!--
-<div id="grad">
-  <img class="bottom" src="./images/morn.png" />
-  <img class="top" src="./images/da.png" />
-</div>
--->
-
-
 
 </body>
 </html>
