@@ -10,7 +10,9 @@ div {
   top: 0;
   bottom: 0;
   display: fixed;
-  overflow: auto;
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .grad {
@@ -40,6 +42,7 @@ div {
   transition: opacity 8s;
   z-index: -2;
 }
+
 .grad:hover::before {
   opacity: 1;
 }
@@ -48,8 +51,6 @@ div {
 
 .grad img{
   position:absolute;
-  right: 0;
-  bottom: 0;
   -webkit-transition: opacity 1s ease-in-out;
   -moz-transition: opacity 1s ease-in-out;
   -o-transition: opacity 1s ease-in-out;
@@ -62,15 +63,15 @@ div {
 }
 
 .grad img.logo {
-	margin-right: 85%;
-	margin-bottom: 43.5%;
-	height: 8%;
+	margin-left: 20px;
+	margin-top: 20px;
+	height: 50px;
 }
 
-.grad img.island {
-	margin-right: 20%;
-	margin-bottom: -20%;
-	height:115%;
+.grad img.desert {
+	margin-left: 0vw;
+	margin-top: 92.5vh;
+	height:200px;
 }
 
 .grad:hover img.top{
@@ -85,63 +86,55 @@ opacity:0.1;
 	opacity:1;
 }
 
-.grad div.flightless{
+.grad div.center{
 	position:absolute;
-	top:30%;
-	left:23%;
-	height:100%;
+	margin-top:25vh;
+	margin-left: calc(40vw - 200px);
+	height: 615px;
+	width: 1000px;
 }
 
-.grad div.description{
+.grad div.center font.flightless{
 	position:absolute;
-	top:42%;
-	left:25%;
-	height:100%;
+	margin-left:0px;
+	margin-top:0px;
 }
 
-.grad div.instagram button.instalink{
+.grad div.center font.description{
 	position:absolute;
-	top:95%;
-	left:5%;
+	margin-left:17px;
+	margin-top:67px;
 }
 
-.grad div.instagram button.instalink img{
-	height:2000%;
-}
-
-.grad div.twitter button.twitterlink{
+.grad div.center img.island {
 	position:absolute;
-	top:95%;
-	left:12%;
+	margin-left: 400px;
+	margin-top: 0px;
+	height:615px;
 }
 
-.grad div.twitter button.twitterlink img{
-	height:2000%;
-}
-
-.grad div.playbutton button {
+.grad div.center button.demo {
 	position:absolute;
-	top:55%;
-	left:25%;
+	top:190px;
+	left:10px;
   display: inline-block;
   border-radius: 4px;
   background-color: #f66b41;
   border: none;
   color: #FFFFFF;
   text-align: center;
-  font-size: 20px;
-  padding: 12px;
-  width: 175px;
+  font-size: 15px;
+  padding: 8px;
+  width: 150px;
   transition: all 0.5s;
   cursor: pointer;
   margin: 5px;
 }
 
 
-.grad div.playbutton button:hover{
+.grad div.center button.demo:hover{
   background-color: #f4511e;
 }
-
 
 @font-face {
     font-family: 'moonlight';
@@ -154,16 +147,20 @@ opacity:0.1;
 
  button{ 
  position: absolute;
- top: 5%;
- left: 80%;
  opacity: 1;
  transition: 0.5s;
  background:none;border:none;outline:0;cursor:pointer;}
  
  button.blog { 
  position: absolute;
- top: 5%;
- left: 90%;
+ top: 20px;
+ right: 20px;
+ background:none;border:none;cursor:pointer;outline:0;}
+ 
+ button.about { 
+ position: absolute;
+ top: 20px;
+ right: 120px;
  background:none;border:none;cursor:pointer;outline:0;}
 
  button.main { 
@@ -177,6 +174,41 @@ opacity:0.1;
  top: 33.5%;
  margin-left: 50%;
  display:none;
+}
+
+.grad button.instagram{
+	position:fixed;
+	z-index: 1;
+	right: 60px;
+	bottom: 50px;
+}
+
+.grad button.instagram img.instalogo{
+	position:fixed;
+	z-index: 1;
+	height:30px;
+}
+
+.grad button.twitter{
+	position:fixed;
+	right: 110px;
+	bottom: 50px;
+}
+ 
+.grad button.twitter img.twitterlogo{
+	position:fixed;
+	height:30px;
+}
+
+.grad button.tumblr{
+	position:fixed;
+	right: 160px;
+	bottom: 50px;
+}
+ 
+.grad button.tumblr img.tumblrlogo{
+	position:fixed;
+	height:30px;
 }
  
 </style>
@@ -196,9 +228,9 @@ $(document).ready(function(){
 
 <body>
   
+  <!--
  <div id="abouttext" margin-top="50%">
 	<font face="moonlight" color="white" size="6">
-	
 
 	Founded 2017
 	<br>
@@ -208,50 +240,37 @@ $(document).ready(function(){
 	
 	</font>
  </div>
+ -->
 
- <!-- TODO: CLEAN -->
- 
- 
- 
 <div class="grad">
 	
 	<!-- <img class="top" src="./images/morning.gif" height="20%"/>
 	<img class="bottom" src="./images/day.gif" height="20%"/> -->
 	
-	<img class="island" src="./images/island.png"/>
+	<img class="desert" src="./images/desert_scene.png"/>
 	
 	<img class="logo" src="./images/logo.png"/>
+
 	
-	<div class="flightless" position="absolute">
-		<font face="moonlight" color="white" style="font-size:400%">&nbsp;FLIGHTLESS</font>
-	</div>
+	<div class="center">
 	
-	<div class="description" position="absolute">
-		<font face="moonlight" color="white" style="font-size:125%">
-		Lorem ipsum dolor sit amet 
+		<font class="flightless" face="moonlight" color="white" style="font-size:400%">&nbsp;FLIGHTLESS</font>
+	
+		<font class="description" face="arial" color="white" style="font-size:150%">
+		An innovative puzzle game
 		<br>
-		Lorem ipsum dolor sit amet
+		about a little bird in a big world.
 		<br>
-		Lorem ipsum dolor sit amet
-		
+		<br>
+		Made with love by six friends.
 		</font>
+		
+		<img class="island" src="./images/island.png"/>
+		
+		<button class="demo" style="vertical-align:middle">PLAY DEMO</button>
+		
 	</div>
-	
-	<div class="playbutton">
-		<button class="button" style="vertical-align:middle">PLAY DEMO</button>
-	</div>
-	
-	<div class="instagram">
-		<button class="instalink" onclick= "window.location.href = 'https://www.instagram.com/bristolstreetstudios/';">
-			<img class="instalogo" src="./images/instagram_logo.jpg"/>
-		</button>
-	</div>
-	
-	<div class="twitter">
-		<button class="twitterlink" onclick= "window.location.href = 'https://twitter.com/bristol_street/';">
-			<img class="twitterlogo" src="./images/twitter_logo.jpg"/>
-		</button>
-	</div>
+
 	
 <br>
 
@@ -266,9 +285,24 @@ $(document).ready(function(){
 		<font face="moonlight" color="white" size="6">&nbsp;Blog</font>
 	</button>
 	
-	<button id = "about">
+	<button class = "about">
 		<font face="moonlight" color="white" size="6">&nbsp;About</font>
 	</button>
+	
+		<button class="instagram" onclick= "window.location.href = 'https://www.instagram.com/bristolstreetstudios/';">
+			<img class="instalogo" src="./images/instagram_logo.png"/>
+		</button>
+	
+		<button class="twitter" onclick= "window.location.href = 'https://twitter.com/bristol_street/';">
+			<img class="twitterlogo" src="./images/twitter_logo.png"/>
+		</button>
+		
+		<button class="tumblr" onclick= "window.location.href = 'https://bristolstreetstudios.tumblr.com/';">
+			<img class="tumblrlogo" src="./images/tumblr_logo.png"/>
+		</button>
+
+</div>
+
 
 </div>
 
