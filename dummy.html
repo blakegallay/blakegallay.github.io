@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<style>
+
+/* Gradient Transition */
+
+div {
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  display: fixed;
+  overflow: auto;
+}
+
+.grad {
+  position: fixed;
+  z-index: -1; /* matters! */
+  background: linear-gradient(
+    to bottom,
+    #28B3FD,
+    #94EEF7
+  );
+}
+.grad::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  background-image: linear-gradient(
+    to bottom,
+    #28B3FD,
+    #94EEF7
+  );
+  opacity: 0;
+  transition: opacity 8s;
+  z-index: -2;
+}
+.grad:hover::before {
+  opacity: 1;
+}
+
+/* Image Transition */
+
+.grad img{
+  position:absolute;
+  right: 0;
+  bottom: 0;
+  -webkit-transition: opacity 1s ease-in-out;
+  -moz-transition: opacity 1s ease-in-out;
+  -o-transition: opacity 1s ease-in-out;
+  transition: opacity 8s ease-in-out;
+}
+
+.grad.main {
+	position:absolute;
+	right: 5;
+}
+
+.grad img.logo {
+	margin-right: 85%;
+	margin-bottom: 43.5%;
+	height: 8%;
+}
+
+.grad img.island {
+	margin-right: 20%;
+	margin-bottom: -20%;
+	height:115%;
+}
+
+.grad:hover img.top{
+	opacity:0;
+}
+
+.grad img.bottom{
+opacity:0.1;
+}
+
+.grad:hover img.bottom{
+	opacity:1;
+}
+
+.grad div.flightless{
+	position:absolute;
+	top:30%;
+	left:23%;
+	height:100%;
+}
+
+.grad div.description{
+	position:absolute;
+	top:42%;
+	left:25%;
+	height:100%;
+}
+
+.grad div.instagram button.instalink{
+	position:absolute;
+	top:95%;
+	left:5%;
+}
+
+.grad div.instagram button.instalink img{
+	height:2000%;
+}
+
+.grad div.twitter button.twitterlink{
+	position:absolute;
+	top:95%;
+	left:12%;
+}
+
+.grad div.twitter button.twitterlink img{
+	height:2000%;
+}
+
+.grad div.playbutton button {
+	position:absolute;
+	top:55%;
+	left:25%;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: #f66b41;
+  border: none;
+  color: #FFFFFF;
+  text-align: center;
+  font-size: 20px;
+  padding: 12px;
+  width: 175px;
+  transition: all 0.5s;
+  cursor: pointer;
+  margin: 5px;
+}
+
+
+.grad div.playbutton button:hover{
+  background-color: #f4511e;
+}
+
+
+@font-face {
+    font-family: 'moonlight';
+    src: url('./fonts/moon/moon_light-webfont.woff2') format('woff2'),
+         url('./fonts/moon/moon_light-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+ button{ 
+ position: absolute;
+ top: 5%;
+ left: 80%;
+ opacity: 1;
+ transition: 0.5s;
+ background:none;border:none;outline:0;cursor:pointer;}
+ 
+ button.blog { 
+ position: absolute;
+ top: 5%;
+ left: 90%;
+ background:none;border:none;cursor:pointer;outline:0;}
+
+ button.main { 
+ position: absolute;
+ top: 40%;
+ left: 40%;
+ background:none;border:none;cursor:pointer;outline:0;}
+ 
+ #abouttext {
+ position: absolute;
+ top: 33.5%;
+ margin-left: 50%;
+ display:none;
+}
+ 
+</style>
+
+<script type="text/javascript" src="./jquery.js"></script>
+<script>
+$(document).ready(function(){
+  $("#about").click(function(){
+    $("#abouttext").fadeToggle();
+  });
+});
+</script>
+<body>
+
+UNDER CONSTRUCTION
+
+</body>
+</html>
