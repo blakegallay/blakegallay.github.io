@@ -1,0 +1,15 @@
+{
+"companyName": "Bristol Street Studios",
+"productName": "Flightless",
+"productVersion": "1.0",
+"dataUrl": "build.data.unityweb",
+"wasmCodeUrl": "build.wasm.code.unityweb",
+"wasmFrameworkUrl": "build.wasm.framework.unityweb",
+"graphicsAPI": ["WebGL 2.0","WebGL 1.0"],
+"webglContextAttributes": {"preserveDrawingBuffer": false},
+"splashScreenStyle": "Dark",
+"backgroundColor": "#000000",
+"developmentBuild": false,
+"multithreading": false,
+"unityVersion": "2019.1.13f1"
+}
